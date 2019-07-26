@@ -13,4 +13,5 @@ export interface IState {
   errorMessage: any
   emptyDataRecieved: boolean
   searcher:string
+  page:number
 }

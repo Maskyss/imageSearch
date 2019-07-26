@@ -5,7 +5,6 @@ import MainSection from '../../components/MainSection/MainSection'
 import Picklist from "../../components/PickList/Picklist";
 
 
-
 class App extends React.Component<any,any> {
   render() {
     return(

@@ -6,15 +6,20 @@ import {ACTION_API_ERRORED,
         IActionInputBrowse} from '../actions/actionsInput'
 import {BING, GOOGLE}from '../actions/actionsSearch'
 import {ItemModel} from '../interfaces'
+import {NEW_PAGE, OLD_PAGE} from "../actions/actionPagination";
 
-export const getProject = (state:any) => state.searcher;
+export const getSearcher = (state:any) => state.searcher;
+export const getPage = (state:any) => state.page;
 
 export default function* watchInputGB() {
     yield takeLatest(ACTION_INPUT_BROWSE, handleInput);
+    yield takeLatest(NEW_PAGE, handleInput);
+    yield takeLatest(OLD_PAGE, handleInput);
 }
 
 function* handleInput(action: IActionInputBrowse) {
-    let searcher = yield select(getProject);
+    let searcher = yield select(getSearcher);
+    let page = yield select(getPage);
 
     console.log(searcher)
 
@@ -29,7 +34,7 @@ function* handleInput(action: IActionInputBrowse) {
             yield put({ type: ACTION_DATA_LOADED, data: mappedItems })
         }
         if (searcher===GOOGLE) {
-            const dataFromApi: any[] =  yield call(fetchReposGoogle, inputValue);
+            const dataFromApi: any[] =  yield call(fetchReposGoogle, inputValue,page);
             const mappedItems = fetchedDataGoogle(dataFromApi);
             yield put({ type: ACTION_DATA_LOADED, data: mappedItems })
         }
@@ -41,12 +46,19 @@ function* handleInput(action: IActionInputBrowse) {
     }
 }
 
-function fetchReposGoogle(query: string) {
+function fetchReposGoogle(query: string,page:number) {
     const apiUrlForRepos: string = 'https://www.googleapis.com/customsearch/v1?'
     const key ='key=AIzaSyAKuv89Ib8tx17CvJs1RNrd6MlQMjlw5qs&'
     const cx ='cx=008303230603769150821:w9ruejvix4y&q='
     const additional:string ='&alt=json&searchType=image'
-    return axios.get(`${apiUrlForRepos}${key}${cx}${query}${additional}`)
+
+    const start:string = '&start='
+    if(page===1){
+        console.log(apiUrlForRepos+key+cx+query+additional+start)
+        return axios.get(`${apiUrlForRepos}${key}${cx}${query}${additional}`)}
+    else {
+        console.log(apiUrlForRepos+key+cx+query+additional+start+(page*10-10+1))
+        return axios.get(`${apiUrlForRepos}${key}${cx}${query}${additional}${start}${page*10-10+1}`)}
 }
 
 function fetchedDataGoogle(dataToMap: any): ItemModel[] {
@@ -67,8 +79,9 @@ function fetchReposBing(query: string) {
 
     const credentials = new CognitiveServicesCredentials(serviceKey);
     const imageSearchApiClient = new ImageSearchAPIClient(credentials);
-
     return imageSearchApiClient.imagesOperations.search(query)
+
+
 }
 
 function fetchedDataBing(dataToMap: any): ItemModel[] {

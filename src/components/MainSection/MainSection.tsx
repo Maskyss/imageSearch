@@ -3,6 +3,7 @@ import { connect } from 'react-redux'
 import Results from './Results'
 import './Main.scss'
 import { IState } from '../../interfaces'
+import Pagination from "../Pagination/Pagination";
 
 interface IProps {
   loading: boolean
@@ -12,7 +13,10 @@ const MainSection = ({ loading }: IProps) => {
   return (
     <div className="main-section">
       <div >
-        {loading ? <div id="loader" /> : <Results />}
+        {loading ? <div id="loader" /> :
+            <Results/>
+        }
+        <Pagination/>
       </div>
     </div>
   )
