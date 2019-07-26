@@ -1,5 +1,5 @@
 .main-section {
-  display: flex;
+  display: grid;
   justify-content: center;
   margin-top: 40px;
 
@@ -12,8 +12,6 @@
     height: 100%;
     margin: 0 auto;
   }
-
-
 
   #message {
     font-family: Verdana, Geneva, Tahoma, sans-serif;
